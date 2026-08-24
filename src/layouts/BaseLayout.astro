@@ -37,7 +37,7 @@ const { title, description } = Astro.props;
             }
           }
         },
-        { threshold: 0.08 }
+        { threshold: 0, rootMargin: '0px 0px -10% 0px' }
       );
       document
         .querySelectorAll<HTMLElement>('[data-reveal]')
