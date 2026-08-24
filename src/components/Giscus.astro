@@ -1,0 +1,66 @@
+---
+import { GISCUS } from '../site.config';
+
+const enabled = Boolean(GISCUS.repo && GISCUS.repoId && GISCUS.categoryId);
+const theme = GISCUS.repo ? 'noborder_dark' : '';
+---
+
+{
+  enabled && (
+    <section class="mt-16 pt-10 border-t border-line">
+      <p class="font-mono text-[10px] tracking-[0.25em] text-faint">
+        COMMENTS
+      </p>
+      <div class="mt-6 min-h-40" id="giscus-root" />
+      <script
+        is:inline
+        src="https://giscus.app/client.js"
+        data-repo={GISCUS.repo}
+        data-repo-id={GISCUS.repoId}
+        data-category={GISCUS.category}
+        data-category-id={GISCUS.categoryId}
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme={theme}
+        data-lang={GISCUS.lang}
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async
+      />
+    </section>
+  )
+}
+
+<script>
+  const apply = (name: string) => {
+    const frame = document.querySelector<HTMLIFrameElement>(
+      'iframe.giscus-frame'
+    );
+    frame?.contentWindow?.postMessage(
+      {
+        giscus: {
+          setConfig: {
+            theme: name === 'light' ? 'noborder_light' : 'noborder_dark',
+          },
+        },
+      },
+      'https://giscus.app'
+    );
+  };
+  document.addEventListener('theme-change', (e) => {
+    apply((e as CustomEvent<string>).detail);
+  });
+  let tries = 0;
+  const timer = setInterval(() => {
+    tries += 1;
+    if (document.querySelector('iframe.giscus-frame')) {
+      apply(document.documentElement.dataset.theme || 'dark');
+      clearInterval(timer);
+    } else if (tries > 40) {
+      clearInterval(timer);
+    }
+  }, 500);
+</script>

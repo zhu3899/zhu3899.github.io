@@ -1,0 +1,138 @@
+---
+---
+
+<div id="search-overlay" class="search-overlay" hidden>
+  <div class="search-panel" role="dialog" aria-modal="true" aria-label="搜索文章">
+    <div class="search-input-row">
+      <span class="text-accent font-mono select-none">❯</span>
+      <input
+        id="search-input"
+        type="text"
+        placeholder="搜索文章…"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <kbd>ESC</kbd>
+    </div>
+    <ul id="search-results" class="search-results max-h-[52vh] overflow-y-auto" />
+    <p id="search-empty" class="hidden px-5 py-8 text-center font-mono text-xs text-muted" />
+    <div
+      class="flex items-center justify-between border-t border-line px-4 py-2.5 font-mono text-[10px] tracking-widest text-faint"
+    >
+      <span>↑↓ SELECT · ↵ OPEN</span>
+      <span>POWERED BY PAGEFIND</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const overlay = document.getElementById('search-overlay')!;
+  const input = document.getElementById('search-input') as HTMLInputElement;
+  const list = document.getElementById('search-results')!;
+  const empty = document.getElementById('search-empty')!;
+
+  let pagefind: any = null;
+  let loadFailed = false;
+  let selIndex = -1;
+
+  async function ensurePagefind() {
+    if (pagefind || loadFailed) return;
+    try {
+      const pfUrl = '/pagefind/pagefind.js';
+      // @ts-ignore
+      pagefind = await import(/* @vite-ignore */ pfUrl);
+    } catch {
+      loadFailed = true;
+      showEmpty('搜索索引仅在构建后可用：先运行 npm run build');
+    }
+  }
+
+  function showEmpty(msg?: string) {
+    empty.textContent =
+      msg ?? `未找到与 “${input.value}” 相关的文章`;
+    empty.classList.remove('hidden');
+  }
+
+  function open() {
+    overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+    input.value = '';
+    list.innerHTML = '';
+    selIndex = -1;
+    input.focus();
+    ensurePagefind();
+  }
+
+  function close() {
+    overlay.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      overlay.hidden ? open() : close();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (overlay.hidden) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const items = [...list.querySelectorAll('li')];
+      if (!items.length) return;
+      items[selIndex]?.querySelector('a')?.classList.remove('is-sel');
+      selIndex =
+        (selIndex + (e.key === 'ArrowDown' ? 1 : -1) + items.length) %
+        items.length;
+      const a = items[selIndex].querySelector('a');
+      a?.classList.add('is-sel');
+      a?.scrollIntoView({ block: 'nearest' });
+    }
+    if (e.key === 'Enter' && selIndex >= 0) {
+      const a = list.querySelectorAll('li')[selIndex]?.querySelector('a');
+      (a as HTMLAnchorElement | null)?.click();
+    }
+  });
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+
+  document
+    .querySelectorAll('[data-search-open]')
+    .forEach((btn) => btn.addEventListener('click', open));
+
+  let debounce: ReturnType<typeof setTimeout> | undefined;
+  input.addEventListener('input', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(run, 120);
+  });
+
+  async function run() {
+    if (!input.value.trim() || !pagefind) return;
+    const res = await pagefind.search(input.value);
+    const data = await Promise.all(
+      res.results.slice(0, 8).map((r: any) => r.data())
+    );
+    list.innerHTML = '';
+    selIndex = -1;
+    empty.classList.toggle('hidden', data.length > 0);
+    if (!data.length && !loadFailed) showEmpty();
+    for (const d of data) {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = d.url;
+      const title = document.createElement('div');
+      title.className = 'sr-title';
+      title.textContent = d.meta?.title ?? d.url;
+      const excerpt = document.createElement('div');
+      excerpt.className = 'sr-excerpt';
+      excerpt.innerHTML = d.excerpt ?? '';
+      a.append(title, excerpt);
+      li.append(a);
+      list.append(li);
+    }
+  }
+</script>

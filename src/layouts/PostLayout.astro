@@ -1,0 +1,132 @@
+---
+import type { MarkdownHeading } from 'astro';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import GenArt from '../components/GenArt.astro';
+import Toc from '../components/Toc.astro';
+import Giscus from '../components/Giscus.astro';
+import { formatDate, readingTime } from '../lib/utils';
+
+interface Neighbor {
+  id: string;
+  title: string;
+}
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  headings: MarkdownHeading[];
+  prev?: Neighbor;
+  next?: Neighbor;
+}
+
+const { post, headings, prev, next } = Astro.props;
+const minutes = readingTime(post.body ?? '');
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <article class="wrap pt-12 pb-4 sm:pt-16" data-pagefind-body>
+    <a href="/blog/" class="u-link font-mono text-xs text-muted" data-pagefind-ignore>
+      ‹‹ BLOG
+    </a>
+
+    <h1
+      class="mt-6 font-mono text-3xl sm:text-5xl font-bold tracking-tight leading-[1.1]"
+      data-reveal
+      data-pagefind-meta="title"
+      data-pagefind-weight="10"
+    >
+      {post.data.title}
+    </h1>
+
+    <div
+      class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-xs text-muted"
+      data-reveal
+    >
+      <span class="text-accent">{formatDate(post.data.pubDate)}</span>
+      {
+        post.data.updatedDate && (
+          <span class="text-faint">
+            更新于 {formatDate(post.data.updatedDate)}
+          </span>
+        )
+      }
+      <span>~{minutes} MIN</span>
+      {
+        post.data.tags.map((t) => (
+          <a href={`/tags/${t}/`} class="chip">
+            #{t}
+          </a>
+        ))
+      }
+    </div>
+
+    <div data-reveal>
+      <GenArt seed={post.id} class="mt-10 aspect-[21/9] rounded-xl" />
+    </div>
+
+    <details
+      class="lg:hidden mt-8 border border-line rounded-lg px-4 py-3"
+      data-reveal
+      data-pagefind-ignore
+    >
+      <summary class="cursor-pointer font-mono text-[10px] tracking-[0.25em] text-muted select-none">
+        INDEX
+      </summary>
+      <div class="mt-4">
+        <Toc headings={headings} />
+      </div>
+    </details>
+
+    <div class="mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_220px] lg:gap-12">
+      <div
+        class="prose min-w-0 prose-headings:scroll-mt-24"
+        data-reveal
+      >
+        <slot />
+      </div>
+      <aside class="hidden lg:block" data-pagefind-ignore>
+        <div class="sticky top-20 max-h-[calc(100vh-7rem)] overflow-y-auto pr-2">
+          <Toc headings={headings} />
+        </div>
+      </aside>
+    </div>
+
+    <nav
+      class="mt-16 grid gap-px border-t border-line pt-8 sm:grid-cols-2 sm:gap-6"
+      aria-label="上下篇"
+      data-pagefind-ignore
+    >
+      {
+        next ? (
+          <a href={`/blog/${next.id}/`} class="group min-w-0">
+            <span class="font-mono text-[10px] tracking-[0.25em] text-faint">
+              ← PREV
+            </span>
+            <p class="mt-1 truncate font-medium transition-colors group-hover:text-accent">
+              {next.title}
+            </p>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        prev && (
+          <a
+            href={`/blog/${prev.id}/`}
+            class="group min-w-0 sm:text-right"
+          >
+            <span class="font-mono text-[10px] tracking-[0.25em] text-faint">
+              NEXT →
+            </span>
+            <p class="mt-1 truncate font-medium transition-colors group-hover:text-accent">
+              {prev.title}
+            </p>
+          </a>
+        )
+      }
+    </nav>
+
+    <Giscus />
+  </article>
+</BaseLayout>

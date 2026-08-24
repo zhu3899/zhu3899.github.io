@@ -1,0 +1,85 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatDate, readingTime } from '../lib/utils';
+import GenArt from './GenArt.astro';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  variant?: 'row' | 'card' | 'featured';
+  index?: number;
+}
+
+const { post, variant = 'row', index = 0 } = Astro.props;
+const href = `/blog/${post.id}/`;
+const delay = `--reveal-delay:${Math.min(index * 60, 360)}ms`;
+const minutes = readingTime(post.body ?? '');
+const tags = post.data.tags.map((t) => `#${t}`).join(' ');
+---
+
+{
+  variant === 'featured' && (
+    <a href={href} class="group block" data-reveal style={delay}>
+      <GenArt seed={post.id} class="aspect-[21/9] rounded-xl" />
+      <div class="mt-5">
+        <h3 class="font-mono text-xl sm:text-2xl font-bold tracking-tight transition-colors group-hover:text-accent">
+          {post.data.title}
+        </h3>
+        <p class="mt-2 text-sm text-muted leading-relaxed">
+          {post.data.description}
+        </p>
+        <p class="mt-2 font-mono text-[11px] tracking-wide text-muted">
+          <span class="text-accent">{formatDate(post.data.pubDate)}</span>
+          <span class="text-faint"> · </span>~{minutes} MIN
+          {tags && <span class="text-faint"> · </span>}
+          {tags}
+        </p>
+      </div>
+    </a>
+  )
+}
+
+{
+  variant === 'card' && (
+    <a href={href} class="group flex flex-col" data-reveal style={delay}>
+      <GenArt seed={post.id} class="aspect-video rounded-lg" />
+      <h3 class="mt-4 font-medium leading-snug transition-colors group-hover:text-accent">
+        {post.data.title}
+      </h3>
+      <p class="mt-1 font-mono text-[11px] tracking-wide text-muted">
+        <span class="text-accent">{formatDate(post.data.pubDate)}</span>
+        <span class="text-faint"> · </span>~{minutes} MIN
+        {tags && <span class="text-faint"> · </span>}
+        {tags}
+      </p>
+    </a>
+  )
+}
+
+{
+  variant === 'row' && (
+    <a
+      href={href}
+      class="group flex items-center gap-4 py-4 border-b border-line"
+      data-reveal
+      style={delay}
+    >
+      <GenArt seed={post.id} class="w-16 h-16 shrink-0 rounded-md" />
+      <div class="min-w-0">
+        <h3 class="font-medium truncate transition-colors group-hover:text-accent">
+          {post.data.title}
+        </h3>
+        <p class="mt-1 font-mono text-[11px] text-muted truncate">
+          <span class="text-accent">{formatDate(post.data.pubDate)}</span>
+          {' · '}
+          {tags}
+        </p>
+      </div>
+      <span
+        class="ml-auto shrink-0 font-mono text-faint transition group-hover:text-accent group-hover:translate-x-0.5"
+        aria-hidden="true"
+      >
+        →
+      </span>
+    </a>
+  )
+}

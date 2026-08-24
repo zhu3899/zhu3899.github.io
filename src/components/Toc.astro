@@ -1,0 +1,32 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+const items = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+{
+  items.length > 0 && (
+    <nav aria-label="目录">
+      <p class="font-mono text-[10px] tracking-[0.25em] text-faint">
+        ON THIS PAGE
+      </p>
+      <ul class="mt-3 space-y-1.5 border-l border-line">
+        {items.map((h) => (
+          <li style={`padding-left:${(h.depth - 1) * 12}px`}>
+            <a
+              href={`#${h.slug}`}
+              class="block font-mono text-xs leading-relaxed text-muted transition-colors hover:text-accent"
+            >
+              {h.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}

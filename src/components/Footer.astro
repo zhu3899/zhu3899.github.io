@@ -1,0 +1,25 @@
+---
+import { SITE } from '../site.config';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-line mt-24">
+  <div
+    class="wrap py-10 flex flex-col-reverse items-start gap-8 sm:flex-row sm:items-center sm:justify-between"
+  >
+    <pre
+      class="font-mono text-[10px] leading-relaxed text-faint select-none"
+      aria-hidden="true">   /\_/\    © {year} {SITE.title}
+  ( o.o )   built with astro + pagefind
+   &gt; ^ &lt;    code as art</pre
+    >
+    <div class="flex items-center gap-5 font-mono text-xs text-muted">
+      <a href={SITE.github} target="_blank" rel="noopener" class="u-link"
+        >GITHUB ↗</a
+      >
+      <a href="/rss.xml" class="u-link">RSS</a>
+      <a href={SITE.email} class="u-link">MAIL</a>
+    </div>
+  </div>
+</footer>

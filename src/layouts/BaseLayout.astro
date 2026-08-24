@@ -1,0 +1,73 @@
+---
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SearchDialog from '../components/SearchDialog.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+  <body class="flex min-h-screen flex-col">
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+    <SearchDialog />
+
+    <script>
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-revealed');
+              io.unobserve(entry.target);
+            }
+          }
+        },
+        { threshold: 0.08 }
+      );
+      document
+        .querySelectorAll<HTMLElement>('[data-reveal]')
+        .forEach((el, i) => {
+          if (!el.style.getPropertyValue('--reveal-delay')) {
+            el.style.setProperty(
+              '--reveal-delay',
+              `${Math.min(i * 60, 360)}ms`
+            );
+          }
+          io.observe(el);
+        });
+
+      document.querySelectorAll('pre').forEach((pre) => {
+        const code = pre.innerText.replace(/\n$/, '');
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'copy-btn';
+        btn.textContent = 'COPY';
+        btn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(code);
+            btn.textContent = 'DONE ✓';
+          } catch {
+            btn.textContent = 'FAILED ✕';
+          }
+          setTimeout(() => (btn.textContent = 'COPY'), 1500);
+        });
+        pre.appendChild(btn);
+      });
+    </script>
+  </body>
+</html>

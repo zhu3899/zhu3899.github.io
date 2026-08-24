@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { sortPosts, groupByYear } from '../../lib/utils';
+
+const posts = sortPosts(await getCollection('blog'));
+const groups = groupByYear(posts);
+---
+
+<BaseLayout
+  title="文章"
+  description="全部文章列表"
+>
+  <div class="wrap pt-12 sm:pt-16">
+    <h1 class="font-mono text-4xl sm:text-6xl font-bold tracking-tight" data-reveal>
+      POSTS<span class="text-accent">_</span>
+    </h1>
+    <p class="mt-4 font-mono text-xs text-muted" data-reveal>
+      <span class="text-faint">$</span> ls -la ~/posts |
+      <span class="text-accent">wc -l</span> → {posts.length}
+    </p>
+
+    {
+      groups.map(([year, yearPosts]) => (
+        <section class="mt-16">
+          <div class="flex items-baseline gap-4">
+            <span class="outline-text font-mono text-5xl sm:text-7xl font-bold select-none">
+              {year}
+            </span>
+            <span class="font-mono text-[10px] tracking-[0.25em] text-faint">
+              {yearPosts.length} ENTRIES
+            </span>
+          </div>
+          <div class="mt-8 grid gap-x-8 gap-y-10 sm:grid-cols-2">
+            {yearPosts.map((post, i) => (
+              <PostCard post={post} variant="card" index={i} />
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>
