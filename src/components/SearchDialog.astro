@@ -42,7 +42,7 @@
     if (pagefind) return;
     try {
       pagefind = await dynamicImport(
-        new URL('pagefind/pagefind.js', document.baseURI).href
+        new URL('/pagefind/pagefind.js', window.location.origin).href
       );
     } catch (err) {
       console.error('[search] Pagefind 加载失败:', err);
