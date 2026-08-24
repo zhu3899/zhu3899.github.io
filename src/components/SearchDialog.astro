@@ -32,18 +32,21 @@
   const empty = document.getElementById('search-empty')!;
 
   let pagefind: any = null;
-  let loadFailed = false;
   let selIndex = -1;
 
+  function dynamicImport(url: string): Promise<any> {
+    return new Function('u', 'return import(u)')(url);
+  }
+
   async function ensurePagefind() {
-    if (pagefind || loadFailed) return;
+    if (pagefind) return;
     try {
-      const pfUrl = '/pagefind/pagefind.js';
-      // @ts-ignore
-      pagefind = await import(/* @vite-ignore */ pfUrl);
-    } catch {
-      loadFailed = true;
-      showEmpty('搜索索引仅在构建后可用：先运行 npm run build');
+      pagefind = await dynamicImport(
+        new URL('pagefind/pagefind.js', document.baseURI).href
+      );
+    } catch (err) {
+      console.error('[search] Pagefind 加载失败:', err);
+      showEmpty('搜索暂时不可用，请刷新重试');
     }
   }
 
@@ -112,14 +115,22 @@
 
   async function run() {
     if (!input.value.trim() || !pagefind) return;
-    const res = await pagefind.search(input.value);
-    const data = await Promise.all(
-      res.results.slice(0, 8).map((r: any) => r.data())
-    );
+    let res;
+    let data;
+    try {
+      res = await pagefind.search(input.value);
+      data = await Promise.all(
+        res.results.slice(0, 8).map((r: any) => r.data())
+      );
+    } catch (err) {
+      console.error('[search] 搜索出错:', err);
+      showEmpty('搜索出错，请重试');
+      return;
+    }
     list.innerHTML = '';
     selIndex = -1;
     empty.classList.toggle('hidden', data.length > 0);
-    if (!data.length && !loadFailed) showEmpty();
+    if (!data.length) showEmpty();
     for (const d of data) {
       const li = document.createElement('li');
       const a = document.createElement('a');
