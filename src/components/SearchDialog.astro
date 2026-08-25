@@ -26,20 +26,31 @@
 </div>
 
 <script>
-  const overlay = document.getElementById('search-overlay')!;
-  const input = document.getElementById('search-input') as HTMLInputElement;
-  const list = document.getElementById('search-results')!;
-  const empty = document.getElementById('search-empty')!;
+  interface SearchCtx {
+    overlay: HTMLElement;
+    input: HTMLInputElement;
+    list: HTMLElement;
+    empty: HTMLElement;
+    selIndex: number;
+    debounce?: ReturnType<typeof setTimeout>;
+  }
 
   let pagefind: any = null;
-  let selIndex = -1;
+  let ctx: SearchCtx | null = null;
 
   function dynamicImport(url: string): Promise<any> {
     return new Function('u', 'return import(u)')(url);
   }
 
+  function showEmpty(msg?: string) {
+    if (!ctx) return;
+    ctx.empty.textContent =
+      msg ?? `未找到与 “${ctx.input.value}” 相关的文章`;
+    ctx.empty.classList.remove('hidden');
+  }
+
   async function ensurePagefind() {
-    if (pagefind) return;
+    if (pagefind || !ctx) return;
     try {
       pagefind = await dynamicImport(
         new URL('/pagefind/pagefind.js', window.location.origin).href
@@ -50,75 +61,12 @@
     }
   }
 
-  function showEmpty(msg?: string) {
-    empty.textContent =
-      msg ?? `未找到与 “${input.value}” 相关的文章`;
-    empty.classList.remove('hidden');
-  }
-
-  function open() {
-    overlay.hidden = false;
-    document.body.style.overflow = 'hidden';
-    input.value = '';
-    list.innerHTML = '';
-    selIndex = -1;
-    input.focus();
-    ensurePagefind();
-  }
-
-  function close() {
-    overlay.hidden = true;
-    document.body.style.overflow = '';
-  }
-
-  window.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-      e.preventDefault();
-      overlay.hidden ? open() : close();
-    }
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (overlay.hidden) return;
-    if (e.key === 'Escape') close();
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      const items = [...list.querySelectorAll('li')];
-      if (!items.length) return;
-      items[selIndex]?.querySelector('a')?.classList.remove('is-sel');
-      selIndex =
-        (selIndex + (e.key === 'ArrowDown' ? 1 : -1) + items.length) %
-        items.length;
-      const a = items[selIndex].querySelector('a');
-      a?.classList.add('is-sel');
-      a?.scrollIntoView({ block: 'nearest' });
-    }
-    if (e.key === 'Enter' && selIndex >= 0) {
-      const a = list.querySelectorAll('li')[selIndex]?.querySelector('a');
-      (a as HTMLAnchorElement | null)?.click();
-    }
-  });
-
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) close();
-  });
-
-  document
-    .querySelectorAll('[data-search-open]')
-    .forEach((btn) => btn.addEventListener('click', open));
-
-  let debounce: ReturnType<typeof setTimeout> | undefined;
-  input.addEventListener('input', () => {
-    clearTimeout(debounce);
-    debounce = setTimeout(run, 120);
-  });
-
   async function run() {
-    if (!input.value.trim() || !pagefind) return;
+    if (!ctx || !ctx.input.value.trim() || !pagefind) return;
     let res;
     let data;
     try {
-      res = await pagefind.search(input.value);
+      res = await pagefind.search(ctx.input.value);
       data = await Promise.all(
         res.results.slice(0, 8).map((r: any) => r.data())
       );
@@ -127,9 +75,9 @@
       showEmpty('搜索出错，请重试');
       return;
     }
-    list.innerHTML = '';
-    selIndex = -1;
-    empty.classList.toggle('hidden', data.length > 0);
+    ctx.list.innerHTML = '';
+    ctx.selIndex = -1;
+    ctx.empty.classList.toggle('hidden', data.length > 0);
     if (!data.length) showEmpty();
     for (const d of data) {
       const li = document.createElement('li');
@@ -143,7 +91,86 @@
       excerpt.innerHTML = d.excerpt ?? '';
       a.append(title, excerpt);
       li.append(a);
-      list.append(li);
+      ctx.list.append(li);
     }
   }
+
+  function open() {
+    if (!ctx) return;
+    ctx.overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+    ctx.input.value = '';
+    ctx.list.innerHTML = '';
+    ctx.selIndex = -1;
+    ctx.input.focus();
+    ensurePagefind();
+  }
+
+  function close() {
+    if (!ctx) return;
+    ctx.overlay.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  function initSearch() {
+    const overlay = document.getElementById('search-overlay');
+    const input = document.getElementById(
+      'search-input'
+    ) as HTMLInputElement | null;
+    const list = document.getElementById('search-results');
+    const empty = document.getElementById('search-empty');
+    if (!overlay || !input || !list || !empty) return;
+
+    ctx = { overlay, input, list, empty, selIndex: -1 };
+
+    if (!(window as any).__searchGlobalBound) {
+      (window as any).__searchGlobalBound = true;
+      window.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+          e.preventDefault();
+          if (!ctx?.overlay.hidden) close();
+          else open();
+        }
+      });
+      document.addEventListener('keydown', (e) => {
+        if (!ctx || ctx.overlay.hidden) return;
+        if (e.key === 'Escape') close();
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          const items = [...ctx.list.querySelectorAll('li')];
+          if (!items.length) return;
+          items[ctx.selIndex]?.querySelector('a')?.classList.remove('is-sel');
+          ctx.selIndex =
+            (ctx.selIndex + (e.key === 'ArrowDown' ? 1 : -1) + items.length) %
+            items.length;
+          const a = items[ctx.selIndex].querySelector('a');
+          a?.classList.add('is-sel');
+          a?.scrollIntoView({ block: 'nearest' });
+        }
+        if (e.key === 'Enter' && ctx.selIndex >= 0) {
+          const a = ctx.list
+            .querySelectorAll('li')
+            [ctx.selIndex]?.querySelector('a');
+          (a as HTMLAnchorElement | null)?.click();
+        }
+      });
+    }
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) close();
+    });
+
+    document
+      .querySelectorAll('[data-search-open]')
+      .forEach((btn) => btn.addEventListener('click', open));
+
+    input.addEventListener('input', () => {
+      if (!ctx) return;
+      clearTimeout(ctx.debounce);
+      ctx.debounce = setTimeout(run, 120);
+    });
+  }
+
+  initSearch();
+  document.addEventListener('astro:page-load', initSearch);
 </script>

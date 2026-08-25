@@ -19,7 +19,7 @@ const isActive = (href: string) =>
       href="/"
       class="font-mono text-sm font-bold tracking-tight whitespace-nowrap"
     >
-      <span class="text-accent blink">▊</span>{SITE.title}<span
+      <span class="text-aurora">▊{SITE.title}</span><span
         class="text-faint">_</span
       >
     </a>
@@ -64,7 +64,8 @@ const isActive = (href: string) =>
 
 <script>
   const root = document.documentElement;
-  const syncIcons = () => {
+
+  function syncIcons() {
     const light = root.dataset.theme === 'light';
     document
       .querySelectorAll<HTMLElement>('.theme-icon-sun')
@@ -72,20 +73,29 @@ const isActive = (href: string) =>
     document
       .querySelectorAll<HTMLElement>('.theme-icon-moon')
       .forEach((el) => el.classList.toggle('hidden', light));
-  };
-  syncIcons();
-  document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach(
-    (btn) =>
-      btn.addEventListener('click', () => {
-        const next = root.dataset.theme === 'light' ? 'dark' : 'light';
-        root.dataset.theme = next;
-        try {
-          localStorage.setItem('theme', next);
-        } catch {}
-        syncIcons();
-        window.dispatchEvent(
-          new CustomEvent('theme-change', { detail: next })
-        );
-      })
-  );
+  }
+
+  function initHeader() {
+    syncIcons();
+    document
+      .querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')
+      .forEach((btn) => {
+        if (btn.dataset.themeBound) return;
+        btn.dataset.themeBound = '1';
+        btn.addEventListener('click', () => {
+          const next = root.dataset.theme === 'light' ? 'dark' : 'light';
+          root.dataset.theme = next;
+          try {
+            localStorage.setItem('theme', next);
+          } catch {}
+          syncIcons();
+          window.dispatchEvent(
+            new CustomEvent('theme-change', { detail: next })
+          );
+        });
+      });
+  }
+
+  initHeader();
+  document.addEventListener('astro:page-load', initHeader);
 </script>

@@ -20,7 +20,8 @@ const items = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
           <li style={`padding-left:${(h.depth - 1) * 12}px`}>
             <a
               href={`#${h.slug}`}
-              class="block font-mono text-xs leading-relaxed text-muted transition-colors hover:text-accent"
+              class="toc-link font-mono text-xs leading-relaxed text-muted"
+              style={`--toc-indent:${(h.depth - 1) * 12}px`}
             >
               {h.text}
             </a>

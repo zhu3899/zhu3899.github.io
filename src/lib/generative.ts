@@ -71,16 +71,17 @@ export class Noise {
 }
 
 function palette(rand: () => number): string[] {
-  const h1 = 178 + rand() * 24;
-  const h2 = 252 + rand() * 30;
+  const h1 = 150 + rand() * 42;
+  const h2 = 254 + rand() * 36;
   const mk = (h: number, s: number, l: number) =>
     `hsl(${h.toFixed(1)} ${s}% ${l}%)`;
   return [
-    mk(h1, 90, 62),
-    mk(h1 + 18, 82, 70),
-    mk(h2, 85, 68),
-    mk(h2 + 22, 76, 76),
-    mk((h1 + h2) / 2, 72, 72),
+    mk(h1, 85, 64),
+    mk(h1 + 20, 78, 72),
+    mk(h2, 82, 70),
+    mk(h2 + 24, 74, 78),
+    mk((h1 + h2) / 2, 70, 74),
+    mk(44 + rand() * 10, 88, 68),
   ];
 }
 
@@ -192,7 +193,7 @@ export function startHero(
   let pts: Particle[] = [];
 
   const paintBase = () => {
-    ctx.fillStyle = '#0a0a10';
+    ctx.fillStyle = '#090c15';
     ctx.fillRect(0, 0, w, h);
   };
 
@@ -224,7 +225,7 @@ export function startHero(
   let tick = 0;
   const frame = () => {
     tick += 1;
-    ctx.fillStyle = 'rgba(10,10,16,0.08)';
+    ctx.fillStyle = 'rgba(9, 12, 21, 0.09)';
     ctx.fillRect(0, 0, w, h);
     ctx.lineCap = 'round';
     ctx.lineWidth = 1;

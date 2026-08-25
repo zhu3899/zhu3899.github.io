@@ -6,13 +6,21 @@ import { createReadStream, existsSync, statSync } from 'node:fs';
 import { join, normalize } from 'node:path';
 
 /**
- * @returns {import('vite').VitePlugin}
+ * @returns {import('vite').Plugin}
  */
 function pagefindDevServer() {
   return {
     name: 'pagefind-dev-server',
     apply: 'serve',
+    /**
+     * @param {import('vite').ViteDevServer} server
+     */
     configureServer(server) {
+      /**
+       * @param {import('node:http').IncomingMessage} req
+       * @param {import('node:http').ServerResponse} res
+       * @param {() => void} next
+       */
       server.middlewares.use((req, res, next) => {
         const url = (req.url ?? '').split('?')[0];
         if (!url.startsWith('/pagefind/')) return next();

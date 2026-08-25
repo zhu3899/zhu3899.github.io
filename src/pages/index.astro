@@ -22,6 +22,8 @@ const phrases = [
 <BaseLayout>
   <section class="relative flex min-h-[86svh] items-center overflow-hidden">
     <HeroCanvas />
+    <div class="aurora"></div>
+    <div class="grid-lines"></div>
     <div class="wrap relative z-10 py-24">
       <p
         class="font-mono text-xs sm:text-sm text-muted"
@@ -30,17 +32,20 @@ const phrases = [
         <span class="text-accent">~/</span>{SITE.title.toLowerCase()}
         <span class="text-faint">$</span> whoami
       </p>
-      <h1
-        class="mt-5 font-mono font-bold tracking-tight leading-[0.95] text-[17vw] sm:text-8xl md:text-9xl select-none"
-        data-reveal
-      >
-        CODE<br />
-        <span class="outline-text">AS ART</span><span
-          class="text-accent blink text-[0.55em] align-baseline">▊</span
+      <h1 class="mt-6 select-none leading-[0.92]" data-reveal>
+        <span
+          class="block font-mono font-bold tracking-tight text-[15.5vw] sm:text-8xl md:text-9xl"
+        >CODE</span>
+        <span
+          class="block font-display italic text-aurora text-[13vw] sm:text-7xl md:text-8xl mt-1 pr-2"
+        >as art<span
+            class="font-mono text-accent text-[0.42em] align-baseline blink"
+            aria-hidden="true">▊</span
+          ></span
         >
       </h1>
       <p
-        class="mt-7 h-6 font-mono text-xs sm:text-sm text-muted"
+        class="mt-8 h-6 font-mono text-xs sm:text-sm text-muted"
         data-reveal
         aria-hidden="true"
       >
@@ -105,35 +110,43 @@ const phrases = [
   </section>
 
   <script>
-    const el = document.getElementById('typed');
-    let phrases: string[] = [];
-    try {
-      phrases = JSON.parse(el?.dataset.phrases ?? '[]');
-    } catch {}
-    if (el && phrases.length) {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    function initTyped() {
+      clearTimeout(timer);
+      const el = document.getElementById('typed');
+      let phrases: string[] = [];
+      try {
+        phrases = JSON.parse(el?.dataset.phrases ?? '[]');
+      } catch {}
+      if (!el || !phrases.length) return;
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
         el.textContent = phrases[0];
-      } else {
-        let pi = 0;
-        let ci = 0;
-        let deleting = false;
-        const step = () => {
-          const cur = phrases[pi];
-          ci += deleting ? -1 : 1;
-          el.textContent = cur.slice(0, ci);
-          let delay = deleting ? 38 : 88;
-          if (!deleting && ci === cur.length) {
-            delay = 2200;
-            deleting = true;
-          } else if (deleting && ci === 0) {
-            deleting = false;
-            pi = (pi + 1) % phrases.length;
-            delay = 420;
-          }
-          setTimeout(step, delay);
-        };
-        step();
+        return;
       }
+      let pi = 0;
+      let ci = 0;
+      let deleting = false;
+      const step = () => {
+        const cur = phrases[pi];
+        ci += deleting ? -1 : 1;
+        el.textContent = cur.slice(0, ci);
+        let delay = deleting ? 38 : 88;
+        if (!deleting && ci === cur.length) {
+          delay = 2200;
+          deleting = true;
+        } else if (deleting && ci === 0) {
+          deleting = false;
+          pi = (pi + 1) % phrases.length;
+          delay = 420;
+        }
+        timer = setTimeout(step, delay);
+      };
+      step();
     }
+
+    initTyped();
+    document.addEventListener('astro:page-load', initTyped);
+    document.addEventListener('astro:before-swap', () => clearTimeout(timer));
   </script>
 </BaseLayout>

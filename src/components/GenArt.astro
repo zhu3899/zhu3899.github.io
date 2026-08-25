@@ -23,10 +23,9 @@ const { seed, class: cls } = Astro.props;
         if (canvas) drawStatic(canvas, el.dataset.seed || `${Math.random()}`);
       });
   };
-  paint();
 
   let timer: ReturnType<typeof setTimeout> | undefined;
-  window.addEventListener('resize', () => {
+  const onResize = () => {
     clearTimeout(timer);
     timer = setTimeout(() => {
       document
@@ -36,5 +35,9 @@ const { seed, class: cls } = Astro.props;
         });
       paint();
     }, 200);
-  });
+  };
+  addEventListener('resize', onResize, { passive: true });
+
+  paint();
+  document.addEventListener('astro:page-load', paint);
 </script>
