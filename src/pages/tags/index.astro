@@ -14,15 +14,21 @@ const tags = [...counts.entries()].sort((a, b) => b[1] - a[1]);
 ---
 
 <BaseLayout title="标签" description="全部标签">
-  <div class="wrap pt-12 sm:pt-16">
-    <h1 class="font-mono text-4xl sm:text-6xl font-bold tracking-tight" data-reveal>
-      TAGS<span class="text-accent">_</span>
+  <div class="wrap pt-16 sm:pt-20">
+    <h1
+      class="font-display text-4xl sm:text-6xl font-semibold tight-cn"
+      data-reveal
+    >
+      标签
     </h1>
     <p class="mt-4 font-mono text-xs text-muted" data-reveal>
       <span class="text-faint">$</span> find ~/posts -name "*.md" | xargs grep
       -h "^tags" | sort | uniq -c
     </p>
-    <div class="mt-12 flex flex-wrap gap-3">
+
+    <div class="rule-double mt-10" data-reveal></div>
+
+    <div class="mt-14 flex flex-wrap gap-3">
       {
         tags.map(([tag, n]) => (
           <a href={`/tags/${tag}/`} class="chip !text-xs px-4 py-1.5">

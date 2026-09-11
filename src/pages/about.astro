@@ -1,81 +1,84 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import GenArt from '../components/GenArt.astro';
+import { SITE } from '../site.config';
 
-const stack = ['Astro', 'TypeScript', 'Tailwind CSS', 'Canvas 2D', 'Pagefind', 'giscus'];
+const stack = ['Astro', 'TypeScript', 'Tailwind CSS', 'Pagefind', 'giscus'];
 const now = [
-  '折腾生成艺术与数据可视化',
+  '折腾排版、色彩与网格',
   '写一些算法与工程笔记',
   '维护这个博客本身',
 ];
 ---
 
 <BaseLayout title="关于" description="关于博主与这个博客">
-  <div class="wrap pt-12 sm:pt-16">
+  <div class="wrap pt-16 sm:pt-20">
     <p class="font-mono text-xs text-muted" data-reveal>
       <span class="text-faint">$</span> cat ~/about.md
     </p>
 
-    <div
-      class="mt-8 grid gap-12 md:grid-cols-[240px_minmax(0,1fr)] md:gap-16"
-    >
-      <div data-reveal>
-        <GenArt seed="avatar-portrait" class="aspect-square rounded-xl w-48 md:w-full" />
-        <p class="mt-4 font-display italic text-xl font-semibold">
-          <span class="text-accent blink">▊</span>{' '}Your Name
+    <div class="rule-double mt-10" data-reveal></div>
+
+    <div class="mt-12 flex items-center gap-6" data-reveal>
+      <span class="seal text-2xl">記</span>
+      <div>
+        <p class="font-display text-3xl font-semibold tight-cn">
+          {SITE.author}
         </p>
-        <p class="mt-1 font-mono text-[11px] text-muted">creative developer</p>
+        <p class="mt-1.5 font-mono text-[11px] text-muted">
+          creative developer
+        </p>
       </div>
+    </div>
 
-      <div class="space-y-10 min-w-0">
-        <section class="prose max-w-none" data-reveal>
-          <h2>你好，访客。</h2>
-          <p>
-            这里是我的数字花园 —— 一个用代码作画的极客博客。我相信工程与艺术并不对立：
-            一段精心设计的算法可以和一幅画一样美。
-          </p>
-          <p>
-            白天写业务代码，夜里玩 Canvas、噪声函数与粒子系统。这个站点的每一个封面、
-            首屏的每一道流光，都是程序画出来的，没有一张外部图片。
-          </p>
-        </section>
+    <div class="mt-16 max-w-[38rem] space-y-14">
+      <section class="prose max-w-none" data-reveal>
+        <h2>你好，访客。</h2>
+        <p>
+          这里是我的数字花园 —— 一个用代码作画的极客博客。我相信工程与艺术并不对立：
+          一段精心设计的算法可以和一幅画一样美。
+        </p>
+        <p>
+          白天写业务代码，夜里读点算法与画论。这个站点没有一张图片：
+          颜色取自石青、石绿、赭石与泥金，其余全靠字距、留白与几道装裱线。
+        </p>
+      </section>
 
-        <section data-reveal>
-          <h3 class="font-mono text-[10px] tracking-[0.25em] text-faint">
-            TECH.STACK
-          </h3>
-          <div class="mt-4 flex flex-wrap gap-2.5">
-            {stack.map((s) => <span class="chip !text-xs px-4 py-1.5">{s}</span>)}
-          </div>
-        </section>
+      <section data-reveal>
+        <h3 class="font-display text-base tight-cn">技术栈</h3>
+        <div class="rule-gold mt-3 w-8"></div>
+        <div class="mt-5 flex flex-wrap gap-2.5">
+          {stack.map((s) => <span class="chip !text-xs px-4 py-1.5">{s}</span>)}
+        </div>
+      </section>
 
-        <section data-reveal>
-          <h3 class="font-mono text-[10px] tracking-[0.25em] text-faint">
-            NOW.PLAYING
-          </h3>
-          <ul class="mt-4 space-y-2">
-            {
-              now.map((n) => (
-                <li class="flex gap-3 font-mono text-xs text-muted">
-                  <span class="text-accent select-none">▸</span>
-                  {n}
-                </li>
-              ))
-            }
-          </ul>
-        </section>
+      <section data-reveal>
+        <h3 class="font-display text-base tight-cn">近来</h3>
+        <div class="rule-gold mt-3 w-8"></div>
+        <ul class="mt-5 space-y-2.5">
+          {
+            now.map((n) => (
+              <li class="flex gap-3 text-sm text-muted">
+                <span class="text-accent select-none">·</span>
+                {n}
+              </li>
+            ))
+          }
+        </ul>
+      </section>
 
-        <section data-reveal>
-          <h3 class="font-mono text-[10px] tracking-[0.25em] text-faint">
-            CONTACT
-          </h3>
-          <div class="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-xs text-muted">
-            <a href="https://github.com/yourname" target="_blank" rel="noopener" class="u-link">GITHUB ↗</a>
-            <a href="mailto:hi@example.com" class="u-link">EMAIL ↗</a>
-            <a href="/rss.xml" class="u-link">RSS</a>
-          </div>
-        </section>
-      </div>
+      <section data-reveal>
+        <h3 class="font-display text-base tight-cn">联系</h3>
+        <div class="rule-gold mt-3 w-8"></div>
+        <div
+          class="mt-5 flex flex-wrap items-center gap-x-7 gap-y-2 font-mono text-xs text-muted"
+        >
+          <a href={SITE.github} target="_blank" rel="noopener" class="u-link"
+            >GITHUB ↗</a
+          >
+          <a href={SITE.email} class="u-link">EMAIL ↗</a>
+          <a href="/rss.xml" class="u-link">RSS</a>
+        </div>
+      </section>
     </div>
   </div>
 </BaseLayout>

@@ -14,17 +14,17 @@ const isActive = (href: string) =>
 ---
 
 <header class="site-header sticky top-0 z-40 border-b border-line">
-  <div class="wrap flex h-14 items-center gap-4 sm:gap-6">
+  <div class="wrap flex h-14 items-center gap-3 sm:gap-6">
     <a
       href="/"
-      class="font-mono text-sm font-bold tracking-tight whitespace-nowrap"
+      class="font-mono text-xs font-bold tracking-tight whitespace-nowrap sm:text-sm"
     >
       <span class="text-aurora">▊{SITE.title}</span><span
         class="text-faint">_</span
       >
     </a>
     <nav
-      class="ml-auto flex items-center gap-3 font-mono text-[11px] tracking-[0.18em] sm:gap-5 sm:text-xs"
+      class="ml-auto flex items-center gap-2 font-mono text-[10px] tracking-[0.06em] sm:gap-5 sm:text-xs sm:tracking-[0.18em]"
       aria-label="主导航"
     >
       {
@@ -44,7 +44,7 @@ const isActive = (href: string) =>
       <button
         type="button"
         data-search-open
-        class="flex items-center gap-1.5 border border-line rounded-md px-2 py-1 text-muted transition-colors hover:border-accent hover:text-accent"
+        class="flex items-center gap-1 border border-line rounded-md px-1.5 py-1 text-muted transition-colors hover:border-accent hover:text-accent sm:gap-1.5 sm:px-2"
         aria-label="搜索文章"
       >
         <span>⌕</span><kbd class="hidden sm:inline-block">Ctrl K</kbd>
@@ -52,7 +52,7 @@ const isActive = (href: string) =>
       <button
         type="button"
         data-theme-toggle
-        class="w-7 h-7 grid place-items-center border border-line rounded-md text-muted transition-colors hover:border-accent hover:text-accent"
+        class="w-6 h-6 shrink-0 grid place-items-center border border-line rounded-md text-muted transition-colors hover:border-accent hover:text-accent sm:w-7 sm:h-7"
         aria-label="切换明暗主题"
       >
         <span class="theme-icon-sun hidden">☀</span>
@@ -89,7 +89,8 @@ const isActive = (href: string) =>
             localStorage.setItem('theme', next);
           } catch {}
           syncIcons();
-          window.dispatchEvent(
+          /* 从 document 派发：会冒泡到 window，document 与 window 上的监听器都能收到 */
+          document.dispatchEvent(
             new CustomEvent('theme-change', { detail: next })
           );
         });

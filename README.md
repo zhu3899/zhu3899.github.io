@@ -1,13 +1,14 @@
 # DEV.LOG — Code as Art 极客博客
 
-生成艺术风 × 瑞士排版的个人博客。所有文章封面与首屏动画均由 Canvas 流场算法根据标题种子实时生成，零外部图片依赖。
+青绿山水设色的个人博客，**全站没有一张图片**。颜色取自石青、石绿、赭石与泥金，
+其余靠字距、留白、印章与装裱线来立——风格全由排版承担。
 
 ## 技术栈
 
 | 层面 | 技术 |
 | ---- | ---- |
 | 框架 | Astro 7（纯静态输出） |
-| 样式 | Tailwind CSS v4 + CSS 变量双主题 |
+| 样式 | Tailwind CSS v4 + CSS 变量双主题（青绿山水 · 绢本设色 / 夜山） |
 | 内容 | Content Collections（frontmatter 类型校验） |
 | 代码高亮 | Shiki 双主题 + 一键复制按钮 |
 | 全文搜索 | Pagefind（构建后静态索引，Ctrl+K 唤起） |
@@ -38,7 +39,7 @@ pubDate: 2026-08-24
 tags: [标签1, 标签2]
 ---
 
-正文支持 Markdown，封面会根据文件名自动生成。
+正文支持 Markdown，列表与文章页的版式由 `PostCard.astro` / `PostLayout.astro` 统一处理。
 ```
 
 草稿：加一行 `draft: true` 即不会被构建发布。
@@ -47,8 +48,9 @@ tags: [标签1, 标签2]
 
 **1. 站点信息** — 编辑 `src/site.config.ts`：
 
-- `url`：改成你的正式域名（同时同步修改 `astro.config.mjs` 里的 `site`，影响 sitemap/RSS/OG）
-- `author`、`github`、`email`
+- `url`：改成你的正式域名。`astro.config.mjs` 的 `site` 已直接引用这个字段，
+  不需要再改第二处；它影响 sitemap / RSS / OG / canonical
+- `author`、`github`、`email`：页脚与关于页都已引用这些字段，改这里即全站生效
 
 **2. 评论系统 giscus（可选）**
 
@@ -79,19 +81,46 @@ tags: [标签1, 标签2]
 ```text
 src/
 ├── content/blog/     Markdown 文章（你的全部数据）
-├── components/       Header / GenArt / SearchDialog / Giscus ...
+├── components/       Header / PostCard / Toc / SearchDialog / Giscus ...
 ├── layouts/          BaseLayout / PostLayout
-├── lib/generative.ts 生成艺术引擎（流场 + 种子随机）
 ├── pages/            路由：首页 / 文章 / 归档 / 标签 / 关于 / 404 / rss
-└── styles/global.css 设计令牌与全局样式
+└── styles/global.css 设计令牌、双主题与东方排版构件
 ```
 
-## 自定义生成艺术
+## 风格怎么落地的
 
-调色板与笔触参数集中在 `src/lib/generative.ts`：
+**没有图片**。青绿山水在这里是一套排版观念，不是一张插图：
 
-- `palette()`：色相区间（默认青 178°–202° 与紫 252°–282°）
-- `drawStatic()`：线条数量 / 步长 / 透明度
-- `startHero()`：首屏粒子数（520）与鼠标扰动半径（160px）
+| 手法 | 实现 | 用在哪 |
+| --- | --- | --- |
+| 矿物色 | `global.css` 两组 CSS 变量 | 全站 |
+| 留白 | 加大区块间距与行距（正文 `line-height: 1.95`） | 全站 |
+| 字距 | `.tight-cn` / `.loose-cn`，汉字标题与竖排各用一档 | 标题、题签 |
+| 印章 | `.seal` —— 全站唯一的朱红，只用在最要紧处 | 首屏、文末、关于页 |
+| 竖排 | `.vertical`（`writing-mode: vertical-rl`） | 首屏题签 |
+| 文武线 | `.rule-double`（一粗一细） | 文章题头、列表页 |
+| 泥金线 | `.rule-gold` —— 只起头不闭合 | 卡片、小节标题 |
+| 汉字序号 | `PostCard.astro` 里的 `cn()` | 列表序号 |
+| 笔锋 | `.post-row` —— 左侧石青细线，hover 时长起来 | 文章条目 |
+
+## 隐藏的彩蛋 · 月洞门
+
+首页右下方那枚印章（`點印開卷`）是个按钮。**点印章**，纸面就从印的位置裂开一个月洞门一样的圆孔，洞外是**手绘 SVG 的青绿山水**——四层山脊（远中近 + 赭石前景）、云气带、皴法、泥金水纹、朱砂日轮。画卷在背后非常缓慢地平移（48s 一个来回），像立在月洞门里看出去的实景。
+
+| 触发 | 行为 |
+| --- | --- |
+| 点击印章 | 圆孔从印章中心向四周缓慢展开（2.8s），印章微微"钤印"顿挫，淡淡一圈涟漪 |
+| 再点印章 / 点别处 / `Esc` | 收卷 |
+
+山水的颜色全部走 CSS 变量，所以深浅两套主题自动跟着变。  
+实现全在 `src/components/MoonGate.astro`（SVG + script，约 180 行），不依赖任何新包。
+
+## 主题
+
+配色定义在 `src/styles/global.css` 的两组变量里（`:root` / `[data-theme='dark']` 与
+`[data-theme='light']`）。**默认浅色**（绢本设色），深色为「夜山」变体。
+
+切换主题只需改变量——页面里没有任何硬编码颜色，也没有需要重绘的画布。
+`Header.astro` 广播 `theme-change` 事件，供需要联动的地方（如 giscus）监听。
 
 改完 `npm run dev` 即时预览。

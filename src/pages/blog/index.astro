@@ -12,27 +12,32 @@ const groups = groupByYear(posts);
   title="文章"
   description="全部文章列表"
 >
-  <div class="wrap pt-12 sm:pt-16">
-    <h1 class="font-mono text-4xl sm:text-6xl font-bold tracking-tight" data-reveal>
-      POSTS<span class="text-accent">_</span>
+  <div class="wrap pt-16 sm:pt-20">
+    <h1
+      class="font-display text-4xl sm:text-6xl font-semibold tight-cn"
+      data-reveal
+    >
+      文章
     </h1>
     <p class="mt-4 font-mono text-xs text-muted" data-reveal>
       <span class="text-faint">$</span> ls -la ~/posts |
       <span class="text-accent">wc -l</span> → {posts.length}
     </p>
 
+    <div class="rule-double mt-10" data-reveal></div>
+
     {
       groups.map(([year, yearPosts]) => (
-        <section class="mt-16">
-          <div class="flex items-baseline gap-4">
+        <section class="mt-20">
+          <div class="flex items-baseline gap-5">
             <span class="font-display italic text-aurora text-6xl sm:text-7xl font-semibold select-none">
               {year}
             </span>
             <span class="font-mono text-[10px] tracking-[0.25em] text-faint">
-              {yearPosts.length} ENTRIES
+              {yearPosts.length} 篇
             </span>
           </div>
-          <div class="mt-8 grid gap-x-8 gap-y-10 sm:grid-cols-2">
+          <div class="mt-12 grid gap-x-10 gap-y-14 sm:grid-cols-2">
             {yearPosts.map((post, i) => (
               <PostCard post={post} variant="card" index={i} />
             ))}

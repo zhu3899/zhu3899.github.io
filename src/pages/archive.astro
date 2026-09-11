@@ -7,17 +7,22 @@ const groups = groupByYear(sortPosts(await getCollection('blog')));
 ---
 
 <BaseLayout title="归档" description="按年份归档的全部文章">
-  <div class="wrap pt-12 sm:pt-16">
-    <h1 class="font-mono text-4xl sm:text-6xl font-bold tracking-tight" data-reveal>
-      ARCHIVE<span class="text-accent">_</span>
+  <div class="wrap pt-16 sm:pt-20">
+    <h1
+      class="font-display text-4xl sm:text-6xl font-semibold tight-cn"
+      data-reveal
+    >
+      归档
     </h1>
     <p class="mt-4 font-mono text-xs text-muted" data-reveal>
       <span class="text-faint">$</span> tree ~/posts --sort=time
     </p>
 
+    <div class="rule-double mt-10" data-reveal></div>
+
     {
       groups.map(([year, yearPosts]) => (
-        <section class="mt-14 grid gap-x-10 gap-y-2 md:grid-cols-[auto_minmax(0,1fr)]">
+        <section class="mt-20 grid gap-x-12 gap-y-2 md:grid-cols-[auto_minmax(0,1fr)]">
           <h2 class="font-display italic text-aurora text-6xl md:text-8xl font-semibold select-none leading-none md:sticky md:top-24 self-start">
             {year}
           </h2>
@@ -25,13 +30,13 @@ const groups = groupByYear(sortPosts(await getCollection('blog')));
             {yearPosts.map((post) => (
               <a
                 href={`/blog/${post.id}/`}
-                class="group flex items-baseline gap-5 py-3 border-b border-line"
+                class="group flex items-baseline gap-5 py-4 border-b border-line"
                 data-reveal
               >
                 <time class="shrink-0 font-mono text-xs text-faint transition-colors group-hover:text-accent">
                   {formatDate(post.data.pubDate)}
                 </time>
-                <span class="min-w-0 truncate font-medium transition-colors group-hover:text-accent">
+                <span class="min-w-0 truncate font-display text-lg tight-cn transition-colors group-hover:text-accent">
                   {post.data.title}
                 </span>
                 <span class="ml-auto hidden shrink-0 font-mono text-[11px] text-faint sm:block">

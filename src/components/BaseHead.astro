@@ -23,12 +23,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 <meta
   name="theme-color"
   media="(prefers-color-scheme: dark)"
-  content="#060810"
+  content="#0e191c"
 />
 <meta
   name="theme-color"
   media="(prefers-color-scheme: light)"
-  content="#f5f3ec"
+  content="#ece3cb"
 />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="canonical" href={canonical} />
@@ -46,7 +46,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 <script is:inline>
   (() => {
     const applyTheme = () => {
-      let t = 'dark';
+      let t = 'light';
       try {
         const saved = localStorage.getItem('theme');
         if (saved === 'light' || saved === 'dark') t = saved;

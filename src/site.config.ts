@@ -1,9 +1,10 @@
 export const SITE = {
   title: 'DEV.LOG',
   subtitle: 'code as art',
-  author: 'Your Name',
+  author: 'Bryce',
   description: '一个用代码作画的极客博客：生成艺术、前端工程与构建记录。',
-  url: 'https://example.com',
+  /* 站点地址的唯一来源 —— astro.config.mjs 的 site 直接引用这里 */
+  url: 'https://zhu3899.github.io',
   github: 'https://github.com/yourname',
   email: 'mailto:hi@example.com',
 };

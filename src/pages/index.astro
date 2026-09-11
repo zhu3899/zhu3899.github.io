@@ -1,9 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import HeroCanvas from '../components/HeroCanvas.astro';
 import PostCard from '../components/PostCard.astro';
-import GenArt from '../components/GenArt.astro';
+import MoonGate from '../components/MoonGate.astro';
 import { SITE } from '../site.config';
 import { sortPosts } from '../lib/utils';
 
@@ -20,63 +19,95 @@ const phrases = [
 ---
 
 <BaseLayout>
-  <section class="relative flex min-h-[86svh] items-center overflow-hidden">
-    <HeroCanvas />
+  <section class="relative flex min-h-[88svh] items-center overflow-hidden">
     <div class="aurora"></div>
     <div class="grid-lines"></div>
-    <div class="wrap relative z-10 py-24">
-      <p
-        class="font-mono text-xs sm:text-sm text-muted"
-        data-reveal
-      >
-        <span class="text-accent">~/</span>{SITE.title.toLowerCase()}
-        <span class="text-faint">$</span> whoami
-      </p>
-      <h1 class="mt-6 select-none leading-[0.92]" data-reveal>
-        <span
-          class="block font-mono font-bold tracking-tight text-[15.5vw] sm:text-8xl md:text-9xl"
-        >CODE</span>
-        <span
-          class="block font-display italic text-aurora text-[13vw] sm:text-7xl md:text-8xl mt-1 pr-2"
-        >as art<span
-            class="font-mono text-accent text-[0.42em] align-baseline blink"
-            aria-hidden="true">▊</span
-          ></span
+    <div class="hero-mount"></div>
+    <MoonGate />
+
+    <div class="wrap relative z-10 py-28">
+      <div class="flex items-start justify-between gap-12">
+        <div class="min-w-0">
+          <p class="font-mono text-xs sm:text-sm text-muted" data-reveal>
+            <span class="text-accent">~/</span>{SITE.title.toLowerCase()}
+            <span class="text-faint">$</span> whoami
+          </p>
+
+          <h1 class="mt-8 select-none leading-[0.94]" data-reveal>
+            <span
+              class="block font-mono font-bold tracking-tight text-[15.5vw] sm:text-8xl md:text-9xl"
+            >CODE</span>
+            <span
+              class="block font-display italic text-aurora text-[13vw] sm:text-7xl md:text-8xl mt-1 pr-2"
+            >as art<span
+                class="font-mono text-accent text-[0.42em] align-baseline blink"
+                aria-hidden="true">▊</span
+              ></span
+            >
+          </h1>
+
+          <div class="rule-gold mt-12 w-24" data-reveal></div>
+
+          <p
+            class="mt-8 h-6 font-mono text-xs sm:text-sm text-muted"
+            data-reveal
+            aria-hidden="true"
+          >
+            <span id="typed" data-phrases={JSON.stringify(phrases)}></span><span
+              class="text-accent blink">_</span
+            >
+          </p>
+
+          <div
+            class="mt-12 flex flex-wrap gap-x-10 gap-y-3 font-mono text-[11px] tracking-widest text-muted"
+            data-reveal
+          >
+            <span><span class="text-faint">POSTS</span> {posts.length}</span>
+            <span><span class="text-faint">TAGS</span> {tagCount}</span>
+            <a href="/about" class="u-link">ABOUT ME →</a>
+            <a href="/rss.xml" class="u-link">RSS FEED →</a>
+          </div>
+        </div>
+
+        <div
+          class="flex shrink-0 flex-col items-center gap-6 pt-3"
+          data-reveal
         >
-      </h1>
-      <p
-        class="mt-8 h-6 font-mono text-xs sm:text-sm text-muted"
-        data-reveal
-        aria-hidden="true"
-      >
-        <span
-          id="typed"
-          data-phrases={JSON.stringify(phrases)}
-        ></span><span class="text-accent blink">_</span>
-      </p>
-      <div
-        class="mt-10 flex flex-wrap gap-x-10 gap-y-3 font-mono text-[11px] tracking-widest text-muted"
-        data-reveal
-      >
-        <span><span class="text-faint">POSTS</span> {posts.length}</span>
-        <span><span class="text-faint">TAGS</span> {tagCount}</span>
-        <a href="/about" class="u-link">ABOUT ME →</a>
-        <a href="/rss.xml" class="u-link">RSS FEED →</a>
+          <span
+            class="vertical hidden lg:block font-display text-lg text-muted loose-cn"
+          >
+            青绿山水
+          </span>
+          <button
+            type="button"
+            class="seal seal-btn text-xl"
+            data-moon-trigger
+            aria-expanded="false"
+            aria-label="点印开卷，看一幅青绿山水"
+            title="点印开卷"
+          >
+            記
+          </button>
+          <span
+            class="hidden lg:block font-mono text-[10px] tracking-[0.2em] text-faint"
+          >
+            点印开卷
+          </span>
+        </div>
       </div>
     </div>
+
     <span
-      class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 font-mono text-[10px] tracking-[0.3em] text-faint animate-bounce"
+      class="absolute bottom-7 left-1/2 -translate-x-1/2 z-10 font-mono text-[10px] tracking-[0.3em] text-faint animate-bounce"
       aria-hidden="true">SCROLL ▾</span
     >
   </section>
 
-  <section class="wrap pt-20">
-    <div class="flex items-end justify-between border-b border-line pb-4">
-      <h2 class="font-mono text-sm tracking-[0.25em]" data-reveal>
-        RECENT.POSTS<span class="text-accent">_</span>
-      </h2>
+  <section class="wrap pt-28">
+    <div class="flex items-end justify-between pb-5">
+      <h2 class="font-display text-xl tight-cn" data-reveal>近作</h2>
       <a href="/blog/" class="u-link font-mono text-[11px] text-muted" data-reveal>
-        VIEW ALL ({posts.length}) →
+        全部 {posts.length} 篇 →
       </a>
     </div>
 
@@ -88,25 +119,21 @@ const phrases = [
       )
     }
 
-    <div class="mt-14">
+    <div class="mt-16">
       {recent.map((post, i) => (
         <PostCard post={post} variant="row" index={i + 1} />
       ))}
     </div>
   </section>
 
-  <section class="wrap pt-24">
-    <div class="border-b border-line pb-4" data-reveal>
-      <h2 class="font-mono text-sm tracking-[0.25em]">
-        EVERY.COVER.IS.UNIQUE<span class="text-accent">_</span>
-      </h2>
-    </div>
-    <a href="/blog/code-as-art/" class="group mt-10 block" data-reveal>
-      <GenArt seed={`${SITE.title}-showcase`} class="aspect-[21/9] rounded-xl" />
-      <p class="mt-4 font-mono text-[11px] text-muted transition-colors group-hover:text-accent">
-        ▲ 本站所有封面均由流场算法根据标题种子实时生成 —— 每篇文章都有独一无二的画。点击了解原理 →
+  <section class="wrap pt-32">
+    <div class="flex flex-col items-center gap-6" data-reveal>
+      <div class="rule-gold w-14"></div>
+      <span class="seal text-lg">記</span>
+      <p class="font-mono text-[11px] tracking-[0.3em] text-faint">
+        DEV.LOG · CODE AS ART
       </p>
-    </a>
+    </div>
   </section>
 
   <script>

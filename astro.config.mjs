@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { join, normalize } from 'node:path';
+import { SITE } from './src/site.config.ts';
 
 /**
  * @returns {import('vite').Plugin}
@@ -50,7 +51,8 @@ function pagefindDevServer() {
 }
 
 export default defineConfig({
-  site: 'https://zhu3899.github.io',
+  // 站点地址的唯一来源：改 src/site.config.ts 的 url 即可，无需再动这里
+  site: SITE.url,
   integrations: [sitemap()],
   markdown: {
     shikiConfig: {

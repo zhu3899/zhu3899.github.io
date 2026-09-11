@@ -1,0 +1,203 @@
+---
+/* 月洞门 —— 点印章，纸面从印的位置裂开一个圆洞，洞外是青绿山水。
+   山水是手绘 SVG（不是程序生成），每一笔的形都能控住；
+   颜色全部走 CSS 变量，深浅两套主题自动跟着变。 */
+---
+
+<div class="moon-gate" data-moon-gate aria-hidden="true">
+  <svg
+    class="moon-art"
+    viewBox="0 0 1200 700"
+    preserveAspectRatio="xMidYMid slice"
+    role="img"
+  >
+    <title>青绿山水</title>
+    <defs>
+      <linearGradient id="mg-sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="var(--accent3)" stop-opacity="0.07" />
+        <stop offset="1" stop-color="var(--accent)" stop-opacity="0.09" />
+      </linearGradient>
+      <linearGradient id="mg-mist" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="var(--bg)" stop-opacity="0" />
+        <stop offset="0.5" stop-color="var(--bg)" stop-opacity="0.92" />
+        <stop offset="1" stop-color="var(--bg)" stop-opacity="0" />
+      </linearGradient>
+      <clipPath id="mg-near">
+        <path
+          d="M0 640 C 110 620, 220 540, 330 505 C 420 478, 480 580, 540 634 C 610 690, 680 530, 790 495 C 880 466, 950 600, 1020 642 C 1090 682, 1150 540, 1200 520 L1200 700 L0 700 Z"
+        ></path>
+      </clipPath>
+    </defs>
+
+    <rect width="1200" height="700" fill="url(#mg-sky)" />
+    <circle cx="852" cy="146" r="54" fill="var(--seal)" opacity="0.7" />
+
+    <!-- 远山：淡石青 -->
+    <path
+      d="M0 300 C 90 285, 200 210, 300 150 C 350 118, 400 225, 450 300 C 495 345, 525 255, 560 230 C 600 208, 628 292, 650 310 C 695 335, 745 200, 800 165 C 855 132, 905 245, 950 300 C 1015 345, 1095 265, 1200 250 L1200 700 L0 700 Z"
+      fill="var(--accent)"
+      opacity="0.2"></path>
+    <rect y="330" width="1200" height="76" fill="url(#mg-mist)" />
+
+    <!-- 中山：石青加重 -->
+    <path
+      d="M0 400 C 70 390, 160 330, 250 300 C 310 280, 360 350, 400 392 C 450 430, 500 300, 570 265 C 630 235, 680 340, 720 400 C 770 445, 830 300, 910 270 C 980 244, 1050 360, 1120 400 C 1160 424, 1185 400, 1200 392 L1200 700 L0 700 Z"
+      fill="var(--accent)"
+      opacity="0.34"></path>
+    <rect y="420" width="1200" height="88" fill="url(#mg-mist)" />
+
+    <!-- 近山：石绿 -->
+    <path
+      d="M0 520 C 90 500, 180 420, 280 385 C 350 362, 400 450, 445 510 C 500 560, 560 420, 650 380 C 730 344, 790 470, 840 520 C 900 570, 960 400, 1050 372 C 1120 350, 1170 470, 1200 500 L1200 700 L0 700 Z"
+      fill="var(--accent2)"
+      opacity="0.48"></path>
+    <rect y="532" width="1200" height="98" fill="url(#mg-mist)" />
+
+    <!-- 前景：赭石 -->
+    <path
+      d="M0 640 C 110 620, 220 540, 330 505 C 420 478, 480 580, 540 634 C 610 690, 680 530, 790 495 C 880 466, 950 600, 1020 642 C 1090 682, 1150 540, 1200 520 L1200 700 L0 700 Z"
+      fill="var(--accent3)"
+      opacity="0.54"></path>
+
+    <!-- 皴法：贴着山形走的短笔 -->
+    <g
+      clip-path="url(#mg-near)"
+      fill="none"
+      stroke="var(--fg)"
+      stroke-width="1.6"
+      stroke-linecap="round"
+      opacity="0.16"
+    >
+      <path d="M110 664 q 32 -16 66 -5"></path>
+      <path d="M250 604 q 34 -14 70 -3"></path>
+      <path d="M372 668 q 30 -18 64 -6"></path>
+      <path d="M480 560 q 36 -16 72 -4"></path>
+      <path d="M602 666 q 32 -17 66 -5"></path>
+      <path d="M712 590 q 34 -15 68 -3"></path>
+      <path d="M822 672 q 30 -18 62 -6"></path>
+      <path d="M930 600 q 36 -16 70 -4"></path>
+      <path d="M1042 666 q 32 -17 66 -5"></path>
+      <path d="M1128 596 q 30 -15 60 -4"></path>
+    </g>
+
+    <!-- 水纹 -->
+    <g fill="none" stroke="var(--accent)" opacity="0.22">
+      <path d="M0 686 Q 300 678 600 686 T 1200 686" stroke-width="1.2"></path>
+      <path d="M0 694 Q 300 687 600 694 T 1200 694" stroke-width="1"></path>
+    </g>
+
+    <!-- 一层薄纱，保证叠在上面的标题仍然读得清 -->
+    <rect width="1200" height="700" fill="var(--bg)" opacity="0.16" />
+  </svg>
+</div>
+
+<style>
+  .moon-gate {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    overflow: hidden;
+    pointer-events: none;
+    /* 从印章的位置开洞，半径 0 → 盖满整屏 */
+    clip-path: circle(0% at var(--mx, 50%) var(--my, 50%));
+    transition: clip-path 2.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: clip-path;
+  }
+  .moon-gate.is-open {
+    clip-path: circle(150% at var(--mx, 50%) var(--my, 50%));
+  }
+
+  .moon-art {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform: scale(1.06);
+    animation: moon-drift 48s ease-in-out infinite alternate;
+  }
+
+  @keyframes moon-drift {
+    from {
+      transform: scale(1.06) translateX(-1.4%);
+    }
+    to {
+      transform: scale(1.06) translateX(1.4%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .moon-gate {
+      transition: none;
+    }
+    .moon-art {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  let isOpen = false;
+  let bound = false;
+
+  function place(gate: HTMLElement, btn: HTMLElement) {
+    const r = btn.getBoundingClientRect();
+    gate.style.setProperty('--mx', `${Math.round(r.left + r.width / 2)}px`);
+    gate.style.setProperty('--my', `${Math.round(r.top + r.height / 2)}px`);
+  }
+
+  function toggle(next?: boolean) {
+    const gate = document.querySelector<HTMLElement>('[data-moon-gate]');
+    const btn = document.querySelector<HTMLElement>('[data-moon-trigger]');
+    if (!gate || !btn) return;
+    const target = next ?? !isOpen;
+    if (target === isOpen) return;
+    /* 圆心始终钉在印章上 —— 无论它在哪、屏幕多宽 */
+    place(gate, btn);
+    gate.classList.toggle('is-open', target);
+    btn.setAttribute('aria-expanded', String(target));
+    isOpen = target;
+  }
+
+  function stamp(btn: HTMLElement) {
+    btn.classList.remove('is-stamping');
+    void btn.offsetWidth;
+    btn.classList.add('is-stamping');
+  }
+
+  function initMoon() {
+    const gate = document.querySelector<HTMLElement>('[data-moon-gate]');
+    const btn = document.querySelector<HTMLElement>('[data-moon-trigger]');
+    if (!gate || !btn) return;
+    isOpen = gate.classList.contains('is-open');
+    if (isOpen) place(gate, btn);
+
+    if (bound) return;
+    bound = true;
+
+    document.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement | null;
+      const trigger = t?.closest('[data-moon-trigger]') as HTMLElement | null;
+      if (trigger) {
+        stamp(trigger);
+        toggle();
+        return;
+      }
+      /* 点别处收卷 */
+      if (isOpen) toggle(false);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isOpen) toggle(false);
+    });
+
+    window.addEventListener(
+      'resize',
+      () => {
+        if (isOpen) toggle(true);
+      },
+      { passive: true }
+    );
+  }
+
+  initMoon();
+  document.addEventListener('astro:page-load', initMoon);
+</script>
